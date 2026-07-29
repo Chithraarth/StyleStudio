@@ -1,0 +1,12 @@
+<svg width="180" height="40" viewBox="0 0 180 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ssGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4321E5"/>
+      <stop offset="1" stop-color="#E6199C"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="36" height="36" rx="11" fill="url(#ssGrad)"/>
+  <text x="20" y="27" text-anchor="middle" font-family="Syne, sans-serif" font-size="20" font-weight="800" fill="#FFFFFF">S</text>
+  <text x="50" y="26" font-family="Syne, sans-serif" font-size="19" font-weight="800" fill="#121115">Style</text>
+  <text x="108" y="26" font-family="Syne, sans-serif" font-size="19" font-weight="800" fill="#4321E5">Studio</text>
+</svg>

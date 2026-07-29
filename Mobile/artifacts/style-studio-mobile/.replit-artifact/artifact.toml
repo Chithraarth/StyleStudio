@@ -1,0 +1,23 @@
+kind = "mobile"
+previewPath = "/mobile/"
+title = "Style Studio Mobile"
+version = "1.0.0"
+id = "artifacts/style-studio-mobile"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/mobile/" ]
+localPort = 23882
+
+[services.development]
+run = "pnpm --filter @workspace/style-studio-mobile run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/style-studio-mobile", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/style-studio-mobile", "run", "serve" ]
+
+[services.env]
+PORT = "23882"
+BASE_PATH = "/mobile/"
