@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stylestudio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: stylestudio
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stylestudio-net
+
+  backend:
+    image: ${DOCKERHUB_USER}/stylestudio-backend:latest
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgres://stylestudio:${POSTGRES_PASSWORD}@postgres:5432/stylestudio
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # PRIVATE_OBJECT_DIR / PUBLIC_OBJECT_SEARCH_PATHS intentionally left
+      # unset — object storage (photo uploads beyond what's already stored
+      # in the DB) is stubbed out for now. The app degrades gracefully:
+      # upload/download routes return a clean error instead of crashing, and
+      # the background snapshot-sweep job just logs failures. Set both and
+      # wire up real S3 credentials in lib/objectStorage.ts when ready.
+    networks:
+      - stylestudio-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  web:
+    image: ${DOCKERHUB_USER}/stylestudio-web:latest
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      PORT: 5173
+      BASE_PATH: /
+      # Backend origin for server-side Open Graph tag rendering on
+      # /share/:token links — see web/vite.config.ts's shareOgPlugin.
+      SHARE_OG_API_ORIGIN: http://backend:3001
+    networks:
+      - stylestudio-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  nginx:
+    image: ${DOCKERHUB_USER}/stylestudio-nginx:latest
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - web
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    networks:
+      - stylestudio-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # Polls Docker Hub every 5 minutes; only touches containers labeled
+  # watchtower.enable=true above (backend, web, nginx) — leaves postgres and
+  # certbot alone since those images aren't rebuilt by the CI pipeline.
+  watchtower:
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --label-enable --cleanup
+
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: >
+      sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h; done'
+
+volumes:
+  postgres_data:
+  certbot_conf:
+  certbot_www:
+
+networks:
+  stylestudio-net:
