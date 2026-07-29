@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-@layer theme, base, clerk, components, utilities;
+@layer theme, base, components, utilities;
 @import 'tailwindcss';
-@import '@clerk/themes/shadcn.css';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 
@@ -179,23 +178,4 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
-}
-
-/* Clerk pseudo-state styling (outside any @layer so it always wins) */
-.cl-formFieldInput::placeholder {
-  color: hsl(260 5% 45%);
-  opacity: 1;
-}
-.cl-formButtonPrimary:hover {
-  background-color: hsl(250 80% 45%);
-}
-.cl-socialButtonsBlockButton:hover {
-  background-color: hsl(40 20% 90%);
-}
-.cl-footerActionLink:hover {
-  text-decoration: underline;
-}
-.cl-formFieldInput:focus {
-  border-color: hsl(250 80% 51%);
-  box-shadow: 0 0 0 1px hsl(250 80% 51%);
 }

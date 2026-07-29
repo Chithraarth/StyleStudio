@@ -16,7 +16,6 @@ RUN pnpm install --frozen-lockfile
 # vite.config.ts throws if PORT/BASE_PATH are unset, even at build time.
 ENV PORT=5173
 ENV BASE_PATH=/
-ARG VITE_CLERK_PUBLISHABLE_KEY
 RUN pnpm --filter @workspace/style-studio run build
 
 ENV NODE_ENV=production

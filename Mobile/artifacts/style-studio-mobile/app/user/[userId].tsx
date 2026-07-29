@@ -10,7 +10,6 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useAuth } from '@clerk/expo';
 import {
   useGetUser,
   useGetUserSummary,
@@ -23,7 +22,6 @@ import {
   Button,
   EmptyState,
   ErrorView,
-  IconButton,
   LoadingView,
   useScreenInsets,
 } from '@/components/ui';
@@ -34,7 +32,6 @@ export default function UserHub() {
   const colors = useColors();
   const insets = useScreenInsets();
   const router = useRouter();
-  const { signOut } = useAuth();
 
   const userQuery = useGetUser(id);
   const summaryQuery = useGetUserSummary(id);
@@ -103,11 +100,7 @@ export default function UserHub() {
         <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={1}>
           {userQuery.data?.name}
         </Text>
-        <IconButton
-          icon="log-out"
-          onPress={() => signOut()}
-          testID="sign-out"
-        />
+        <View style={{ width: 42 }} />
       </View>
 
       <View style={styles.statsRow}>

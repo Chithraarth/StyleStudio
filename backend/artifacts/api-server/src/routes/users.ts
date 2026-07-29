@@ -19,8 +19,10 @@ const ser = <T extends { createdAt: Date }>(r: T) => ({ ...r, createdAt: r.creat
 const router: IRouter = Router();
 
 // NOTE: the legacy unauthenticated `GET /users` and `POST /users` endpoints
-// were removed — accounts are provisioned automatically from the verified
-// Clerk session on first authenticated request (see middlewares/auth.ts).
+// were removed when Clerk-based accounts were introduced. No real auth
+// provider is wired up right now (Clerk was removed; Firebase is a planned
+// follow-up) — every request resolves to a single auto-provisioned default
+// user instead (see middlewares/auth.ts).
 
 // Must be registered before /users/:userId so "me" isn't parsed as an id.
 router.get("/users/me", async (req, res): Promise<void> => {

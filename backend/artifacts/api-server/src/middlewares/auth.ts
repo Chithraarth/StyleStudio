@@ -1,63 +1,43 @@
 import type { Request, Response } from "express";
-import { getAuth, clerkClient } from "@clerk/express";
-import { eq } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 import { db, usersTable } from "@workspace/db";
 
 type LocalUser = typeof usersTable.$inferSelect;
 
 /**
- * Resolves the caller's local user row from the verified Clerk session.
- * On the first authenticated request, a local user row is provisioned
- * just-in-time from the Clerk profile.
+ * No real auth provider is wired up right now (Clerk was removed; Firebase
+ * auth is a planned follow-up). Every request resolves to the same single
+ * auto-provisioned local user, so the rest of the app (avatar/look ownership
+ * checks, "my" endpoints) keeps working end-to-end in the meantime — this
+ * mirrors routes/storage.ts, which already documents having no auth layer.
  *
- * Returns null when the request carries no valid Clerk session.
+ * Replace this with real per-request identity resolution (Firebase ID token
+ * verification) when auth is added back; every caller in this codebase goes
+ * through requireAuthenticatedUser/getAuthenticatedUser, so that's the only
+ * place that needs to change.
  */
 export async function getAuthenticatedUser(
-  req: Request,
+  _req: Request,
 ): Promise<LocalUser | null> {
-  const auth = getAuth(req);
-  const clerkId = auth?.userId;
-  if (!clerkId) return null;
-
   const [existing] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.clerkId, clerkId));
+    .orderBy(asc(usersTable.id))
+    .limit(1);
   if (existing) return existing;
 
-  // First request from this Clerk account: provision a local profile.
-  let name = "New user";
-  let email: string | null = null;
-  try {
-    const clerkUser = await clerkClient.users.getUser(clerkId);
-    const fullName = [clerkUser.firstName, clerkUser.lastName]
-      .filter(Boolean)
-      .join(" ")
-      .trim();
-    email = clerkUser.primaryEmailAddress?.emailAddress ?? null;
-    name = fullName || clerkUser.username || email?.split("@")[0] || name;
-  } catch (err) {
-    req.log?.warn({ err }, "Failed to fetch Clerk profile for provisioning");
-  }
-
-  // Handle a concurrent first request racing the insert.
   const [created] = await db
     .insert(usersTable)
-    .values({ clerkId, name, email })
-    .onConflictDoNothing({ target: usersTable.clerkId })
+    .values({ name: "Default user", email: null })
     .returning();
-  if (created) return created;
-
-  const [raced] = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.clerkId, clerkId));
-  return raced ?? null;
+  return created ?? null;
 }
 
 /**
- * Like getAuthenticatedUser, but sends a 401 response and returns null
- * when the caller is not signed in.
+ * Kept for call-site compatibility with routes that expect a 401 path — it
+ * never actually rejects today, since getAuthenticatedUser always resolves
+ * to the single default user. Will start rejecting once real auth replaces
+ * getAuthenticatedUser above.
  */
 export async function requireAuthenticatedUser(
   req: Request,

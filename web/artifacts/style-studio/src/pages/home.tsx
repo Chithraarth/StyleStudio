@@ -39,24 +39,14 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link href="/sign-in" className="w-full sm:w-auto">
+          <Link href="/hub" className="w-full sm:w-auto">
             <Button
               size="lg"
               className="w-full sm:w-auto h-14 px-8 rounded-2xl text-lg font-semibold shadow-lg shadow-primary/20 group"
-              data-testid="button-sign-in"
+              data-testid="button-get-started"
             >
-              Sign in
+              Get started
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="/sign-up" className="w-full sm:w-auto">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto h-14 px-8 rounded-2xl text-lg font-semibold border-2"
-              data-testid="button-create-account"
-            >
-              Create account
             </Button>
           </Link>
         </div>

@@ -20,9 +20,10 @@ services:
       NODE_ENV: production
       PORT: 3001
       DATABASE_URL: postgres://stylestudio:${POSTGRES_PASSWORD}@postgres:5432/stylestudio
-      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
-      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      # No auth provider is wired up right now (Clerk was removed; Firebase
+      # is a planned follow-up) — every request resolves to a single
+      # auto-provisioned default user (see middlewares/auth.ts).
       # PRIVATE_OBJECT_DIR / PUBLIC_OBJECT_SEARCH_PATHS intentionally left
       # unset — object storage (photo uploads beyond what's already stored
       # in the DB) is stubbed out for now. The app degrades gracefully:

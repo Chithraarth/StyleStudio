@@ -4,8 +4,9 @@ import { db, looksTable, avatarsTable } from "@workspace/db";
 import { getAuthenticatedUser } from "./auth";
 
 /**
- * Reads the caller's local user id from the verified Clerk session.
- * Returns null when the request is not authenticated.
+ * Reads the caller's local user id. No real auth is wired up right now, so
+ * this always resolves to the single auto-provisioned default user (see
+ * middlewares/auth.ts) — never actually returns null today.
  */
 export async function getCallerUserId(req: Request): Promise<number | null> {
   const user = await getAuthenticatedUser(req);

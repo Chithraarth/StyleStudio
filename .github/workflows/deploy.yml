@@ -34,8 +34,6 @@ jobs:
         with:
           context: ./web
           push: true
-          build-args: |
-            VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/stylestudio-web:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/stylestudio-web:${{ github.sha }}

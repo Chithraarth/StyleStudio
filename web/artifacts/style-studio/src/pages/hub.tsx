@@ -44,7 +44,7 @@ export default function Hub() {
   if (isLoadingUser || isLoadingSummary || isLoadingAvatars) {
     return (
       <div className="min-h-[100dvh] flex flex-col bg-background">
-        <Navbar title="Loading..." showSignOut />
+        <Navbar title="Loading..." />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -55,7 +55,7 @@ export default function Hub() {
   if (!user) {
     return (
       <div className="min-h-[100dvh] flex flex-col bg-background">
-        <Navbar showSignOut />
+        <Navbar />
         <div className="flex-1 flex items-center justify-center p-6 text-center">
           <div>
             <h2 className="text-2xl font-bold mb-2">Something went wrong</h2>
@@ -68,7 +68,7 @@ export default function Hub() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
-      <Navbar title={`Hello, ${user.name}`} showSignOut />
+      <Navbar title={`Hello, ${user.name}`} />
 
       <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         {/* Stats Row */}
